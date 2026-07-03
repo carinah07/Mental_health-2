@@ -166,7 +166,7 @@ export default {
 }
 
 .modal {
-  background: linear-gradient(to bottom right, #f0fdfa, #e6fff9);
+  background: var(--bg-modal);
   border-radius: 16px;
   width: 1000%;
   max-width: 500px;
@@ -221,13 +221,13 @@ export default {
   color: white;
 }
 .close-btn {
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--primary-teal);
   color: var(--primary-teal);
 }
 .reset-btn:hover,
 .close-btn:hover {
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--primary-teal);
   color: var(--primary-teal);
 }
@@ -241,7 +241,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f0fdfa;
+  background: var(--bg-guide);
 }
 
 .message {
@@ -261,7 +261,7 @@ export default {
 }
 
 .bubble {
-  background-color: white;
+  background-color: var(--bg-card);
   padding: 10px 15px;
   border-radius: 16px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -275,7 +275,8 @@ export default {
 }
 
 .bot .bubble {
-  background-color: #fff;
+  background-color: #333;
+  color: #fff;
   border-bottom-left-radius: 0;
 }
 
@@ -284,7 +285,7 @@ export default {
   align-items: center;
   gap: 5px;
   padding: 10px 15px;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -327,25 +328,25 @@ export default {
   margin: 0.5rem 0;
   padding: 0.1rem 1rem;
   border-left: 4px solid var(--primary-teal);
-  background: #e6fff9;
+  background: var(--light-teal);
   font-style: italic;
-  color: #555;
+  color: var(--text-muted);
   border-radius: 8px;
 }
 
 .chat-input {
   padding: 8px 2px;
   width: 100%;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-card);
 }
 
 .input-wrapper {
   position: relative;
   width: 60%;
   margin: 0 auto;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 30px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-input);
   border-color: var(--primary-teal);
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
   padding: 10px 50px 10px 20px;
@@ -368,7 +369,7 @@ export default {
   line-height: 1.2;
   font-family: Arial, Helvetica, sans-serif;
   background: transparent;
-  color: #333;
+  color: var(--text-dark);
   min-height: 70px;
   max-height: 80px;
   overflow-y: auto;

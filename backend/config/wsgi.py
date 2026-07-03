@@ -1,5 +1,5 @@
 """
-WSGI config for the PAWHA Mental Health API.
+WSGI config for the MindCare Mental Health API.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

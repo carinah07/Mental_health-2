@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <h2>{{ $t('PHQ9_title') }}</h2>
     <!-- Step 0: Age/Sex Selection -->
@@ -79,6 +79,14 @@
         <router-link v-if="redirectLink" :to="redirectLink">
             <button class="contact-btn">{{ $t('followup_support') }}</button>
         </router-link>
+        <button
+          v-if="assessmentId"
+          class="download-btn"
+          :disabled="downloading"
+          @click="downloadReport"
+        >
+          {{ downloading ? $t('please_wait') : $t('download_report') }}
+        </button>
         </div>
     </div>
 
@@ -95,6 +103,7 @@
 <script>
 import { marked } from "marked";
 import axios from '@/services/api'
+import { downloadAssessmentReport } from '@/utils/reports'
 
 export default {
   emits: ["close"],

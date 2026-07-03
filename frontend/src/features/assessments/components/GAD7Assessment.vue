@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <h2>{{ $t('GAD7_title') }}</h2>
     <!-- Step 0: Basic Info -->
@@ -70,6 +70,14 @@
         <router-link v-if="redirectLink" :to="redirectLink">
           <button class="contact-btn">{{ $t('followup_support') }}</button>
         </router-link>
+        <button
+          v-if="assessmentId"
+          class="download-btn"
+          :disabled="downloading"
+          @click="downloadReport"
+        >
+          {{ downloading ? $t('please_wait') : $t('download_report') }}
+        </button>
       </div>
       <div v-if="showScrollArrow" class="scroll-arrow">⬇</div>
     </div>

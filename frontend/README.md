@@ -1,6 +1,6 @@
-# PAWHA Mental Health Frontend
+# MindCare Mental Health Frontend
 
-Public Vue app for the PAWHA mental health experience.
+Public Vue app for the MindCare mental health experience.
 
 ## Setup
 

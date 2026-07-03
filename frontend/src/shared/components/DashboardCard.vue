@@ -16,19 +16,19 @@ export default {
 
 <style scoped>
 .card {
-  background: linear-gradient(135deg, #f0fdfa 0%, #e6fff9 100%);
+  background: linear-gradient(135deg, var(--light-teal) 0%, var(--bg-card) 100%);
   border-left: 6px solid var(--primary-teal);
   border-radius: 16px;
   padding: 20px;
   text-align: center;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.1);
+  box-shadow: 0 4px 14px var(--shadow-card);
 }
 .card:hover {
   transform: translateY(-6px);
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-  box-shadow: 0 10px 24px rgba(13, 148, 136, 0.3);
+  background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-teal-dark) 100%);
+  box-shadow: 0 10px 24px var(--shadow-card);
 }
 .card:hover .label,
 .card:hover p {
@@ -58,7 +58,7 @@ export default {
 }
 p {
   font-size: 0.88rem;
-  color: #555;
+  color: var(--text-muted);
   margin: 0;
 }
 </style>

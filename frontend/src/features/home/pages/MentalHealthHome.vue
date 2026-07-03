@@ -1,4 +1,18 @@
 <template>
+  <div ref="bgRef" class="floating-bg" @mousemove="onMouseMove">
+    <div
+      v-for="(item, i) in items"
+      :key="i"
+      class="floating-item"
+    >
+      <div
+        class="floating-inner"
+        :style="{ width: item.size + 'px', height: item.size + 'px', color: '#0d9488', opacity: item.opacity }"
+        v-html="item.svg"
+      ></div>
+    </div>
+  </div>
+  <div class="background-glow"></div>
   <div class="container">
     <header class="navbar" :class="{ open: menuOpen }">
       <div class="nav-left">
@@ -21,11 +35,15 @@
 
       <nav class="nav-links" :class="{ show: menuOpen }">
         <a @click="$router.push('/')" class="nav-link">Home</a>
+        <a @click="$router.push('/my-reports')" class="nav-link">{{ $t('my_reports') }}</a>
+        <a v-if="auth.isAdmin" @click="$router.push('/admin')" class="nav-link">{{ $t('admin_panel') }}</a>
+        <a @click="handleLogout" class="nav-link">{{ $t('logout') }}</a>
         <a><LanguageSelector /></a>
+        <ThemeToggle />
       </nav>
     </header>
 
-    <h1 class="heading">{{ $t('title') }}</h1>
+    <h1 class="heading">{{ $t('welcome_user') }}, {{ auth.displayName }}</h1>
     <p class="sub">{{ $t('welcome') }}</p>
 
     <div class="grid">
@@ -55,29 +73,6 @@
         </template>
       </DashboardCard>
 
-      <!-- Education Card -->
-      <DashboardCard :title="$t('rule_chat')" :description="$t('rule_description')" @click="modal = 'rule'">
-        <template #icon>
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 10L6 20l22 10 22-10-22-10z" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M6 20v16" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="M14 24v10c0 3.3 6.3 6 14 6s14-2.7 14-6V24" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="46" cy="24" r="3" fill="#5eead4"/>
-          </svg>
-        </template>
-      </DashboardCard>
-
-      <!-- Find Experts Card -->
-      <DashboardCard :title="$t('experts')" :description="$t('experts_description')" @click="modal = 'experts'">
-        <template #icon>
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="22" cy="18" r="9" stroke="#0d9488" stroke-width="2.5"/>
-            <path d="M4 46c0-9.9 8.1-18 18-18" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="M40 28c4.4 0 8 3.6 8 8 0 5.5-8 14-8 14S32 41.5 32 36c0-4.4 3.6-8 8-8z" stroke="#0d9488" stroke-width="2.5" fill="#e6fff9"/>
-            <circle cx="40" cy="36" r="3" fill="#0d9488"/>
-          </svg>
-        </template>
-      </DashboardCard>
     </div>
 
     <!-- Modals -->
@@ -86,9 +81,6 @@
     </transition>
     <AssessmentModal v-if="modal === 'assessment'" @close="modal = null" />
     <AssessmentGAD7 v-if="modal === 'assessmentGAD7'" @close="modal = null" />
-    <RuleChatModal v-if="modal === 'rule'" @close="modal = null" />
-    <ExpertsModal v-if="modal === 'experts'" @close="modal = null" />
-
     <!-- Floating Bot (Mia) -->
     <div class="floating-bot" @click="openNLPModal">
       <div class="tooltip">
@@ -109,37 +101,141 @@
 </template>
 
 <script>
+import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 import LanguageSelector from "@/shared/components/LanguageSelector.vue";
 import DashboardCard from "@/shared/components/DashboardCard.vue";
 import AssessmentModal from "@/features/assessments/components/AssessmentModal.vue";
-import AssessmentModal2 from "@/features/assessments/components/AssessmentModal2.vue";
 import AssessmentGAD7 from "@/features/assessments/components/AssessmentGAD7.vue";
 import NLPChatModal from "@/features/chat/components/NLPChatModal.vue";
-import RuleChatModal from "@/features/chat/components/RuleChatModal.vue";
-import ExpertsModal from "@/features/experts/components/ExpertsModal.vue";
+import { useAuthStore } from "@/stores/auth";
+
+const iconSvgs = [
+  // Brain
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6C15.7 6 9 12.7 9 21c0 5.2 2.8 9.7 7 12.2V42h16V33.2C36.2 30.7 39 26.2 39 21c0-8.3-6.7-15-15-15z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M17 42h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 46h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 21c0-2.2 1.8-4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  // Heart
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 42s-16-10-16-22c0-6 4-10 10-10 3.5 0 6 2 6 2s2.5-2 6-2c6 0 10 4 10 10 0 12-16 22-16 22z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+  // Plus/Cross
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="6" width="8" height="36" rx="2" fill="currentColor" opacity="0.6"/><rect x="6" y="20" width="36" height="8" rx="2" fill="currentColor" opacity="0.6"/></svg>',
+  // Puzzle piece
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10h12v6c-2 0-4 2-4 4s2 4 4 4v6H10V10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="20" cy="20" r="2" fill="currentColor" opacity="0.4"/></svg>',
+  // Thought bubble
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 20c0-7.7 7.2-14 16-14s16 6.3 16 14-7.2 14-16 14c-2.5 0-4.8-.5-6.9-1.3L10 40l2.5-8.3C10.9 29.5 8 25.7 8 20z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><ellipse cx="24" cy="20" rx="2" ry="2" fill="currentColor" opacity="0.5"/></svg>',
+  // Infinity
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 28c-3 0-6-2.5-6-6s3-6 6-6c3 0 5 2 6 4s3 4 6 4 5-2 6-4 3-4 6-4c3 0 6 2.5 6 6s-3 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  // Peace
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2"/><path d="M24 6v36M24 24l15 15M24 24L9 39" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  // Brain with lightbulb idea
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6C18 6 14 10 14 16c0 3.5 1.8 6.5 4.5 8.2V34h11V24.2C32.2 22.5 34 19.5 34 16c0-6-4-10-10-10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M22 3h4v4h-4z" fill="currentColor" opacity="0.5"/><path d="M20 5l-3 5h14l-3-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/><circle cx="24" cy="10" r="3" fill="currentColor" opacity="0.3"/><path d="M24 13v3m-2 0h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M18 34h12v2H18z" fill="currentColor" opacity="0.3"/><path d="M19 38h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M21 42h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  // Head silhouette
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="16" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 44c0-6.6 5.4-12 12-12s12 5.4 12 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+  // Heart pulse
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 40s-14-9-14-20c0-5.5 4-9 9-9 3 0 5 1.5 5 1.5s2-1.5 5-1.5c5 0 9 3.5 9 9 0 11-14 20-14 20z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16 22h5l3 6 3-10 3 6h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  // Lotus/calm
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6C18 12 12 18 12 26c0 6 4 10 12 16 8-6 12-10 12-16 0-8-6-14-12-20z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M24 22c-3 3-6 8-6 12 0 2 2 4 6 7" stroke="currentColor" stroke-width="1" stroke-linejoin="round" opacity="0.5"/><path d="M24 22c3 3 6 8 6 12 0 2-2 4-6 7" stroke="currentColor" stroke-width="1" stroke-linejoin="round" opacity="0.5"/></svg>',
+  // Sparkle/star
+  '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 4l4 12h13l-10 7 4 13-11-7-11 7 4-13-10-7h13z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+]
+
+function randomBetween(a, b) {
+  return a + Math.random() * (b - a)
+}
 
 export default {
   components: {
+    ThemeToggle,
     LanguageSelector,
     DashboardCard,
     AssessmentModal,
-    AssessmentModal2,
     AssessmentGAD7,
     NLPChatModal,
-    RuleChatModal,
-    ExpertsModal,
+  },
+  setup() {
+    const auth = useAuthStore();
+    return { auth };
   },
   data() {
     return {
       modal: null,
       botSound: null,
       menuOpen: false,
+      mouseX: 0.5,
+      mouseY: 0.5,
+      items: [],
     };
   },
   mounted() {
     this.botSound = new Audio('/sounds/bot-open.mp3');
+    this.buildItems();
+    this.animFrame = requestAnimationFrame(() => this.tick());
+  },
+  beforeUnmount() {
+    if (this.animFrame) cancelAnimationFrame(this.animFrame);
   },
   methods: {
+    buildItems() {
+      const list = []
+      for (let i = 0; i < 55; i++) {
+        const svg = iconSvgs[i % iconSvgs.length]
+        const size = randomBetween(20, 48)
+        list.push({
+          svg,
+          refX: randomBetween(0, 100),
+          refY: randomBetween(0, 100),
+          x: 0, y: 0,
+          vx: randomBetween(-0.3, 0.3),
+          vy: randomBetween(-0.3, 0.3),
+          radius: randomBetween(8, 25),
+          speed: randomBetween(0.12, 0.35),
+          size,
+          opacity: randomBetween(0.06, 0.25),
+          phase: randomBetween(0, Math.PI * 2),
+        })
+      }
+      this.items = list
+    },
+    onMouseMove(e) {
+      const rect = this.$refs.bgRef?.getBoundingClientRect()
+      if (!rect) return
+      this.mouseX = (e.clientX - rect.left) / rect.width
+      this.mouseY = (e.clientY - rect.top) / rect.height
+    },
+    tick() {
+      const bg = this.$refs.bgRef
+      if (!bg) { this.animFrame = requestAnimationFrame(() => this.tick()); return }
+      const rect = bg.getBoundingClientRect()
+      const mxPx = this.mouseX * rect.width
+      const myPx = this.mouseY * rect.height
+      const now = Date.now() / 1000
+      for (const item of this.items) {
+        const angle = now * item.speed + item.phase
+        const tx = Math.sin(angle) * item.radius
+        const ty = Math.cos(angle * 0.7) * item.radius
+        const px = item.refX + tx
+        const py = item.refY + ty
+        const ex = (px / 100) * rect.width
+        const ey = (py / 100) * rect.height
+        const dx = ex - mxPx
+        const dy = ey - myPx
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const maxDist = 180
+        const strength = Math.max(0, 1 - dist / maxDist)
+        const repel = strength * strength * 80
+        const a = Math.atan2(dy, dx)
+        const rx = Math.cos(a) * repel
+        const ry = Math.sin(a) * repel
+        item.x = ex + rx
+        item.y = ey + ry
+      }
+      const children = bg.children
+      for (let i = 0; i < this.items.length; i++) {
+        const el = children[i]
+        if (!el) continue
+        const item = this.items[i]
+        el.style.left = (item.x - item.size / 2) + 'px'
+        el.style.top = (item.y - item.size / 2) + 'px'
+      }
+      this.animFrame = requestAnimationFrame(() => this.tick())
+    },
     openNLPModal() {
       this.modal = 'nlp';
       if (this.botSound) {
@@ -150,20 +246,96 @@ export default {
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
     },
+    handleLogout() {
+      this.auth.logout();
+      this.$router.push('/login');
+    },
   },
 };
 </script>
 
 <style scoped>
+.floating-bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.floating-inner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.floating-item {
+  position: absolute;
+  pointer-events: none;
+  will-change: left, top;
+}
+
+.floating-inner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.background-glow {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #5eead444, transparent 60%);
+  animation: pulse 8s infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .container {
   padding: 1rem 2rem;
   max-width: 100%;
+  min-height: 100vh;
   margin: auto;
   position: relative;
+  z-index: 2;
+}
+
+.heading {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-teal);
+  margin-bottom: 0.4rem;
+  background: var(--bg-card-translucent);
+  backdrop-filter: blur(6px);
+  display: block;
+  padding: 0.5rem 2rem;
+  border-radius: 12px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.sub {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  background: var(--bg-card-translucent);
+  backdrop-filter: blur(6px);
+  display: block;
+  padding: 0.5rem 1.5rem;
+  border-radius: 10px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .navbar {
-  background: linear-gradient(135deg, #e6fff9, #f0fdfa);
+  background: var(--bg-card-translucent);
+  backdrop-filter: blur(8px);
   color: var(--primary-teal);
   padding: 1rem 2rem;
   border-radius: 16px;
@@ -171,9 +343,9 @@ export default {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 4px 16px var(--shadow-navbar);
   margin-bottom: 2rem;
-  border-bottom: 2px solid #5eead4;
+  border-bottom: 2px solid var(--border-card);
 }
 
 .nav-left {
@@ -211,7 +383,7 @@ export default {
 }
 
 .nav-link:hover {
-  background-color: #ccfbf1;
+  background-color: var(--bg-hover-teal);
 }
 
 .hamburger {
@@ -239,18 +411,7 @@ export default {
   .hamburger { display: flex; }
 }
 
-.heading {
-  text-align: center;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--primary-teal);
-  margin-bottom: 0.4rem;
-}
-.sub {
-  text-align: center;
-  color: #555;
-  margin-bottom: 2rem;
-}
+
 .grid {
   display: flex;
   flex-wrap: wrap;
@@ -267,8 +428,15 @@ export default {
 .footer {
   text-align: center;
   margin-top: 2.5rem;
-  color: #777;
+  color: var(--text-footer);
   font-size: 0.85rem;
+  background: var(--bg-card-translucent);
+  backdrop-filter: blur(6px);
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Floating Bot */
@@ -295,8 +463,8 @@ export default {
 .bot-icon:hover { transform: scale(1.07); }
 
 .tooltip {
-  background: white;
-  color: #333;
+  background: var(--bg-card);
+  color: var(--text-dark);
   padding: 0.6rem 1rem;
   border-radius: 10px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
@@ -315,6 +483,11 @@ export default {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
 }
 
 @keyframes wave {

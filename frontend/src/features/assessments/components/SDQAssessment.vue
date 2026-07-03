@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <h2>{{ $t('child_title') }}</h2>
     <p class="child-desc">{{ $t('child_description') }}</p>
@@ -75,6 +75,14 @@
         <router-link v-if="redirectLink" :to="redirectLink">
           <button class="contact-btn">{{ $t('followup_support') }}</button>
         </router-link>
+        <button
+          v-if="assessmentId"
+          class="download-btn"
+          :disabled="downloading"
+          @click="downloadReport"
+        >
+          {{ downloading ? $t('please_wait') : $t('download_report') }}
+        </button>
 
        
       </div>

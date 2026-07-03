@@ -9,9 +9,62 @@
   --text-light: #fff;
   --font-family: 'Segoe UI', sans-serif;
 
-  /* Backward-compat aliases so components referencing old names get teal */
   --primary-red: #0d9488;
   --light-pink: #e6fff9;
+
+  --bg-card: #fff;
+  --bg-card-translucent: rgba(255, 255, 255, 0.88);
+  --bg-navbar: linear-gradient(135deg, #e6fff9, #f0fdfa);
+  --bg-page-gradient: linear-gradient(120deg, #e6fff9, #f0f9ff);
+  --bg-modal: linear-gradient(to bottom right, #ffffff, #e6fff9);
+  --text-muted: #555;
+  --text-secondary: #666;
+  --text-subtle: #444;
+  --text-footer: #777;
+  --border-card: #ccfbf1;
+  --border-input: #99f6e4;
+  --border-input-auth: #ccc;
+  --bg-hover-teal: #ccfbf1;
+  --bg-guide: #f0fdfa;
+  --danger: #b91c1c;
+  --badge-bg: #e2e8f0;
+  --badge-text: #334155;
+  --success-bg: #e0f7e9;
+  --success-border: green;
+  --shadow-card: rgba(13, 148, 136, 0.1);
+  --shadow-navbar: rgba(13, 148, 136, 0.15);
+}
+
+[data-theme="dark"] {
+  --light-teal: #1e293b;
+  --soft-gray: #0f172a;
+  --text-dark: #e2e8f0;
+  --text-light: #0f172a;
+  --light-pink: #1e293b;
+
+  --bg-card: #1e293b;
+  --bg-card-translucent: rgba(30, 41, 59, 0.92);
+  --bg-navbar: linear-gradient(135deg, #0f172a, #1e293b);
+  --bg-page-gradient: linear-gradient(120deg, #0f172a, #1e293b);
+  --bg-modal: linear-gradient(to bottom right, #1e293b, #0f172a);
+  --text-muted: #94a3b8;
+  --text-secondary: #94a3b8;
+  --text-subtle: #cbd5e1;
+  --text-footer: #64748b;
+  --border-card: #334155;
+  --border-input: #334155;
+  --border-input-auth: #334155;
+  --bg-hover-teal: #334155;
+  --bg-guide: #1e293b;
+  --danger: #ef4444;
+  --badge-bg: #334155;
+  --badge-text: #e2e8f0;
+  --success-bg: #064e3b;
+  --success-border: #10b981;
+  --shadow-card: rgba(0, 0, 0, 0.3);
+  --shadow-navbar: rgba(0, 0, 0, 0.3);
+
+  --chat-header: #0d948899;
 }
 
 body {
@@ -24,8 +77,13 @@ body {
   margin: 0;
   padding: 0;
   color: var(--text-dark);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 #app {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 100 100'%3E%3Cg fill='%235eead4' opacity='0.1'%3E%3Ccircle cx='20' cy='20' r='5' /%3E%3Ccircle cx='80' cy='20' r='5' /%3E%3Ccircle cx='50' cy='50' r='5' /%3E%3Ccircle cx='20' cy='80' r='5' /%3E%3Ccircle cx='80' cy='80' r='5' /%3E%3C/g%3E%3C/svg%3E");
   background-attachment: fixed;
+}
+
+input, textarea, select {
+  caret-color: #333;
 }

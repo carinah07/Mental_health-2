@@ -1,4 +1,4 @@
-# PAWHA Mental Health
+# MindCare Mental Health
 
 Public mental-health web app with a Django REST backend and Vue frontend.
 
@@ -9,7 +9,7 @@ backend/   Django API, feature apps, settings, and requirements
 frontend/  Public Vue/Vite app
 ```
 
-The custom admin backend app and admin Vue panel have been removed. Public API routes remain under `/api/chatbot/`, `/api/assessment/`, `/api/education/`, and `/api/experts/`.
+Education and Experts modules have been removed; all enquiries are now handled by the chatbot at `/api/chatbot/`. Public API routes remain under `/api/assessment/` and `/api/chatbot/`.
 
 ## Development
 

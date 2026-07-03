@@ -4,6 +4,7 @@
     <div class="background-glow"></div>
 
     <div class="content-wrapper">
+      <div class="theme-toggle-wrap"><ThemeToggle /></div>
       <!-- MindCare SVG Logo -->
       <div class="logo-wrap">
         <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +20,7 @@
       <p class="subtitle">Your mind matters. Talk safely, without judgement, at your own pace.</p>
 
       <div class="cards">
-        <div class="card" @click="navigate('/mental-health')">
+        <div class="card" @click="enterApp">
           <!-- Mental Health SVG icon -->
           <div class="card-icon-wrap">
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,46 +40,63 @@
 </template>
 
 <script setup>
+import ThemeToggle from "@/shared/components/ThemeToggle.vue";
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import * as THREE from 'three'
 
 const vantaRef = ref(null)
 let vantaEffect
 
+function initVanta() {
+  if (!vantaRef.value || vantaEffect || !window.VANTA?.NET) return
+
+  vantaEffect = window.VANTA.NET({
+    el: vantaRef.value,
+    THREE,
+    mouseControls: true,
+    touchControls: true,
+    gyroControls: false,
+    minHeight: 200.0,
+    minWidth: 200.0,
+    scale: 1.0,
+    scaleMobile: 1.0,
+    color: 0x0d9488,
+    backgroundColor: 0xe6fff9,
+    points: 10.0,
+    maxDistance: 20.0,
+    spacing: 15.0,
+  })
+}
+
 onMounted(() => {
-  const script = document.createElement('script')
-  script.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js'
-  script.onload = () => {
-    if (!vantaEffect && window.VANTA) {
-      vantaEffect = window.VANTA.NET({
-        el: vantaRef.value,
-        THREE,
-        mouseControls: true,
-        touchControls: true,
-        gyroControls: false,
-        minHeight: 200.0,
-        minWidth: 200.0,
-        scale: 1.0,
-        scaleMobile: 1.0,
-        color: 0x0d9488,
-        backgroundColor: 0xe6fff9,
-        points: 10.0,
-        maxDistance: 20.0,
-        spacing: 15.0
-      })
-    }
+  window.THREE = THREE
+
+  if (window.VANTA?.NET) {
+    initVanta()
+    return
   }
-  document.body.appendChild(script)
+
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js'
+  script.onload = initVanta
+  script.onerror = () => console.error('Failed to load Vanta background effect')
+  document.head.appendChild(script)
 })
 
 onUnmounted(() => {
-  if (vantaEffect) vantaEffect.destroy()
+  if (vantaEffect) {
+    vantaEffect.destroy()
+    vantaEffect = null
+  }
 })
 
 const router = useRouter()
-function navigate(route) {
-  router.push(route)
+const auth = useAuthStore()
+
+function enterApp() {
+  router.push(auth.isAuthenticated ? '/mental-health' : '/login')
 }
 </script>
 
@@ -86,13 +104,13 @@ function navigate(route) {
 .landing-page {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(120deg, #e6fff9, #f0f9ff);
+  background: var(--bg-page-gradient);
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: var(--font-family);
 }
 
 .background-glow {
@@ -101,22 +119,29 @@ function navigate(route) {
   height: 100%;
   background: radial-gradient(circle at center, #5eead444, transparent 60%);
   animation: pulse 8s infinite;
-  z-index: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .content-wrapper {
   position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+  background: var(--bg-card-translucent);
   backdrop-filter: blur(8px);
   border-radius: 2rem;
   padding: 3rem;
   text-align: center;
-  box-shadow: 0 8px 40px rgba(13, 148, 136, 0.18);
+  box-shadow: 0 8px 40px var(--shadow-card);
   max-width: 960px;
   width: 90%;
-  color: #333;
-  border: 1px solid rgba(94, 234, 212, 0.3);
+  color: var(--text-dark);
+  border: 1px solid var(--border-card);
+}
+
+.theme-toggle-wrap {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .logo-wrap {
@@ -129,7 +154,7 @@ function navigate(route) {
   font-size: 2.8rem;
   margin-bottom: 0.5rem;
   font-weight: 800;
-  color: #0f766e;
+  color: var(--primary-teal-dark);
 }
 
 .main-title span {
@@ -139,7 +164,7 @@ function navigate(route) {
 .subtitle {
   font-size: 1.15rem;
   margin-bottom: 2.5rem;
-  color: #444;
+  color: var(--text-subtle);
 }
 
 .cards {
@@ -150,11 +175,11 @@ function navigate(route) {
 }
 
 .card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 1.25rem;
   padding: 2rem 1.5rem;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
+  box-shadow: 0 8px 24px var(--shadow-card);
   transition: all 0.35s ease;
   border: 2px solid transparent;
   display: flex;
@@ -171,7 +196,7 @@ function navigate(route) {
 .card h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0d9488;
+  color: var(--primary-teal);
   margin: 0;
 }
 
@@ -202,5 +227,6 @@ function navigate(route) {
   z-index: 0;
   top: 0;
   left: 0;
+  pointer-events: none;
 }
 </style>

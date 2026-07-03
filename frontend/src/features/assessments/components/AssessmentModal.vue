@@ -76,7 +76,7 @@ export default {
 }
 
 .modal {
-  background: linear-gradient(to bottom right, #ffffff, #e6fff9);
+  background: var(--bg-modal);
   border-radius: 20px;
   padding: 30px;
   width: 90%;
@@ -104,10 +104,10 @@ h2 {
   margin: 3px 0;
   padding: 3px 6px;
   border-left: 4px solid var(--primary-red);
-  background: #f0fdfa;
+  background: var(--bg-guide);
   font-style: italic;
   font-size: 14px;
-  color: #555;
+  color: var(--text-muted);
   border-radius: 8px;
 }
 
@@ -131,7 +131,7 @@ h2 {
 }
 .actions button {
   padding: 10px 20px;
-  background-color: white;
+  background-color: var(--bg-card);
   color: var(--primary-red);
   border: 1px solid var(--primary-red);
   border-radius: 10px;

@@ -186,7 +186,7 @@ export default {
   z-index: 1000;
 }
 .modal {
-  background: linear-gradient(to bottom right, #ffffff, #e6fff9);
+  background: var(--bg-modal);
   border-radius: 20px;
   padding: 30px;
   width: 90%;
@@ -207,7 +207,7 @@ h2 {
   font-weight: bold;
 }
 .progress-bar {
-  background-color: #99f6e4;
+  background-color: var(--border-input);
   border-radius: 10px;
   height: 12px;
   overflow: hidden;
@@ -218,7 +218,7 @@ h2 {
   transition: width 0.3s ease;
 }
 b {
-  color: black;
+  color: var(--text-dark);
   font-size: 14px;
 }
 .question p {
@@ -230,10 +230,10 @@ b {
   margin: 3px 0;
   padding: 3px 6px;
   border-left: 4px solid var(--primary-red);
-  background: #f0fdfa;
+  background: var(--bg-guide);
   font-style: italic;
   font-size: 14px;
-  color: #555;
+  color: var(--text-muted);
   border-radius: 8px;
 }
 .options {
@@ -242,11 +242,12 @@ b {
   gap: 10px;
 }
 .options button {
-  background-color: #f0fdfa;
+  background-color: var(--bg-guide);
   border: 1px solid var(--primary-red);
   padding: 10px 15px;
   border-radius: 12px;
   cursor: pointer;
+  color: var(--text-dark);
 }
 .options button:hover {
   background-color: var(--primary-red);
@@ -285,7 +286,7 @@ b {
 .loading {
   text-align: center;
   font-style: italic;
-  color: #555;
+  color: var(--text-muted);
   margin-top: 15px;
   font-size: 15px;
 }
@@ -317,9 +318,8 @@ b {
   text-align: center;
   margin-top: 15px;
   padding: 10px;
-  border-left: 4px solid #aaa;
-  
-  background: #f9f9f9;
+  border-left: 4px solid var(--text-muted);
+  background: var(--bg-card);
   border-radius: 8px;
 }
 .actions {
@@ -361,9 +361,10 @@ b {
 .intro-form select {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-input-auth);
   font-size: 16px;
-  background: #fff;
+  background: var(--bg-card);
+  color: var(--text-dark);
   outline-color: var(--primary-red);
 }
 
@@ -384,7 +385,7 @@ b {
 }
 
 .intro-form button:disabled {
-  background-color: #5eead4;
+  background-color: var(--accent-teal, #5eead4);
   cursor: not-allowed;
   opacity: 0.7;
 }

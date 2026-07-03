@@ -7,8 +7,12 @@
 </template>
 
 <script>
+import { useThemeStore } from '@/stores/theme'
 export default {
-  name: "App"
+  name: "App",
+  mounted() {
+    useThemeStore().apply()
+  }
 }
 </script>
 

@@ -86,7 +86,7 @@ export default {
   z-index: 1000;
 }
 .modal {
-  background: linear-gradient(to bottom right, #ffffff, #e6fff9);
+  background: var(--bg-modal);
   border-radius: 20px;
   padding: 30px;
   width: 90%;
@@ -103,10 +103,10 @@ h2 {
   margin: 10px 0;
   padding: 6px 10px;
   border-left: 4px solid var(--primary-red);
-  background: #f0fdfa;
+  background: var(--bg-guide);
   font-style: italic;
   font-size: 14px;
-  color: #555;
+  color: var(--text-muted);
   border-radius: 8px;
 }
 .intro-form {
@@ -119,10 +119,12 @@ h2 {
 .intro-form textarea {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-input-auth);
   font-size: 16px;
   outline-color: var(--primary-red);
   resize: vertical;
+  background: var(--bg-card);
+  color: var(--text-dark);
 }
 .intro-form button {
   margin-top: 10px;
@@ -136,7 +138,7 @@ h2 {
   transition: background 0.3s ease;
 }
 .intro-form button:disabled {
-  background-color: #5eead4;
+  background-color: var(--accent-teal, #5eead4);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -159,25 +161,27 @@ h2 {
   text-align: center;
 }
 .alt-btn {
-  background: #eee;
+  background: var(--badge-bg);
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
+  color: var(--text-dark);
 }
 .success-msg {
   text-align: center;
   margin-top: 20px;
   font-size: 16px;
-  background-color: #e0f7e9;
+  background-color: var(--success-bg);
   padding: 15px;
-  border-left: 5px solid green;
+  border-left: 5px solid var(--success-border);
   border-radius: 10px;
+  color: var(--text-dark);
 }
 .error-msg {
   margin-top: 10px;
-  color: red;
+  color: var(--danger);
   font-size: 14px;
   text-align: center;
 }
