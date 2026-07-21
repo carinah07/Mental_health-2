@@ -1,8 +1,15 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
+// Fall back to localhost for local development, or the Railway-hosted
+// backend when no explicit VITE_API_BASE_URL is provided (e.g. production
+// builds that were not configured with the env var).
+const defaultBaseURL = import.meta.env.DEV
+  ? 'http://127.0.0.1:8000'
+  : 'https://mentalpals.up.railway.app'
+
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || defaultBaseURL,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   },
